@@ -1,0 +1,24 @@
+ public IEnumerable<PepHistoryViewModel> GetPepHistoryWithChildDetails(int Pepid)
+        {
+             //DbContext.Entry<T>(dbentity).Reference(p=>p.)
+            // return DbContext.CDDGPepHistories.ToList();
+            return (from Hist in DbContext.CDDGPepHistories
+                    join guser in DbContext.CDDGUsers on Hist.CreatedBy equals guser.LanID into username
+                    from guser in username.DefaultIfEmpty()
+                    join gpeprequeststatus in DbContext.CDDGPEPRequestStatus on Hist.PepRequestStatusId equals gpeprequeststatus.PepRequestStatusID into status
+                    from gpeprequeststatus in status.DefaultIfEmpty()
+
+  
+                    where Hist.PepId == Pepid
+                    select new PepHistoryViewModel
+                    {
+                        PepId = Hist.PepId,
+                        CreatedTS = Hist.CreatedTS,
+                        FirstName = guser.FirstName,
+                        LastName = guser.LastName,
+                        PepDeterminationComments = Hist.PepDeterminationComments,
+                        PepRequestStatus  = gpeprequeststatus.StatusName
+
+                    });
+
+        }
